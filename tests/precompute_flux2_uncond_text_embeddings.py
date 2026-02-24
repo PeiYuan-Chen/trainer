@@ -1,7 +1,7 @@
 import torch
 from transformers import Qwen3ForCausalLM, Qwen2TokenizerFast
 
-
+@torch.inference_mode()
 def get_qwen3_prompt_embeds(
     text_encoder: Qwen3ForCausalLM,
     tokenizer: Qwen2TokenizerFast,
@@ -62,12 +62,12 @@ def get_qwen3_prompt_embeds(
 
 
 if __name__ == "__main__":
-    model_id = "Qwen/Qwen3-32B"
-    output_path = "flux2-uncond-text-embeddings.pt"
+    model_id = "/data/coding/FLUX.2-klein-base-9B"
+    output_path = "/data/coding/outputs/flux2-uncond-text-embeddings.pt"
     text_encoder = Qwen3ForCausalLM.from_pretrained(
-        model_id, torch_dtype=torch.bfloat16
-    )
-    tokenizer = Qwen2TokenizerFast.from_pretrained(model_id)
+        model_id, subfolder="text_encoder", torch_dtype=torch.bfloat16
+    ).to("cuda")
+    tokenizer = Qwen2TokenizerFast.from_pretrained(model_id, subfolder="tokenizer")
 
     prompt = ""
     prompt_embeds = get_qwen3_prompt_embeds(text_encoder, tokenizer, prompt)
@@ -75,3 +75,4 @@ if __name__ == "__main__":
     prompt_embeds = prompt_embeds.squeeze(0)
     print(prompt_embeds.shape)
     torch.save({"text_embeddings": prompt_embeds}, output_path)
+    print(prompt_embeds.requires_grad)

@@ -123,7 +123,7 @@ class Trainer(Stateful):
         if lora_config is not None:
             model.requires_grad_(False)
             model = get_peft_model(model, lora_config)
-        model = self.parallilize_model(model, self.parallel_dims)
+        model = self.parallelize_model(model, self.parallel_dims)
         model.train()
         self.model = model
         self.optimizer = optimizer_factory(
@@ -143,7 +143,7 @@ class Trainer(Stateful):
         # trainer state
         self.step = 0
 
-        metric_logger.info(
+        logger.info(
             f"trainable parameters: {sum(p.numel() for p in self.model.parameters() if p.requires_grad)}"
         )
 
@@ -255,6 +255,7 @@ class Trainer(Stateful):
             else:
                 logs[k] = v
 
+        logger.info({"step": self.step, **logs})
         self.logger.log(self.step, logs)
 
     def save_checkpoint(self) -> None:
@@ -306,7 +307,7 @@ class Trainer(Stateful):
     def forward_step(self, batch: dict[str, torch.Tensor]) -> torch.Tensor: ...
 
     @staticmethod
-    def parallilize_model(
+    def parallelize_model(
         model: torch.nn.Module,
         parallel_dims: ParallelDims,
     ) -> torch.nn.Module:

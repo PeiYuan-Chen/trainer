@@ -90,7 +90,7 @@ class ParallelDims:
 
         self._meshes = {
             "batch": dataloading_mesh["batch"],
-            "loss": loss_mesh["loss"],
+            "loss": loss_mesh,
             "dp_replicate": dense_mesh["dp_replicate"],
             "fsdp": dense_mesh["fsdp"],
             "cp": dataloading_mesh["cp"],

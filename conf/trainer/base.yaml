@@ -1,5 +1,5 @@
 defaults:
   - training_config: base
   - metric_logger: tb
-  - checkpointer: dcp
+  - checkpointer: torch_save
   - _self_

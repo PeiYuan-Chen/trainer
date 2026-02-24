@@ -29,7 +29,7 @@ class StreamingConditionImageCaptionLatentsDataset(StreamingDataset):
     ):
         # Set defaults for vision-friendly streaming args.
         streaming_kwargs.setdefault("shuffle_block_size", 1 << 18)
-        streaming_kwargs.setdefault("shuffle_algo", "py1s")
+        # streaming_kwargs.setdefault("shuffle_algo", "py1s")
         streams = make_streams(
             remote, local=local, proportion=proportion, repeat=repeat, choose=choose
         )
@@ -117,5 +117,8 @@ class StreamingConditionImageCaptionLatentsDataset(StreamingDataset):
                     sample[f"{caption_key}_{name}"],
                     self.text_embedding_dtype,
                 )
+        
+        # for k,v in out.items():
+        #     print(k, v.requires_grad)
 
         return out

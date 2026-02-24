@@ -4,8 +4,12 @@ from typing import Literal
 import torch
 from diffusers import Flux2KleinPipeline
 from diffusers.training_utils import compute_loss_weighting_for_sd3
+from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import (
+    checkpoint_wrapper as ptd_checkpoint_wrapper,
+)
 
 from trainer.train import Trainer
+from trainer.distributed import ParallelDims
 
 
 class Flux2KleinTI2ITrainer(Trainer):
@@ -41,7 +45,7 @@ class Flux2KleinTI2ITrainer(Trainer):
             device=model_input.device
         )
 
-        cond_model_input = batch["cond_image_latents"]
+        cond_model_input = batch["condition_image_latents"]
         cond_model_input_ids = torch.cat(
             [
                 Flux2KleinPipeline._prepare_image_ids(
@@ -129,3 +133,22 @@ class Flux2KleinTI2ITrainer(Trainer):
         )
         loss = loss.mean()
         return loss
+
+    @staticmethod
+    def parallelize_model(
+        model: torch.nn.Module,
+        parallel_dims: ParallelDims,
+    ) -> torch.nn.Module:
+        # pyright: ignore [missing-attribute]
+        for layer_id, block in model.transformer_blocks.named_children():
+            block = ptd_checkpoint_wrapper(block, preserve_rng_state=True)
+            # pyrefly: ignore [missing-attribute]
+            model.transformer_blocks.register_module(layer_id, block)
+
+        # pyrefly: ignore [missing-attribute]
+        for layer_id, block in model.single_transformer_blocks.named_children():
+            block = ptd_checkpoint_wrapper(block, preserve_rng_state=True)
+            # pyrefly: ignore [missing-attribute]
+            model.single_transformer_blocks.register_module(layer_id, block)
+
+        return model.cuda()

@@ -7,6 +7,7 @@ model_factory:
   _target_: diffusers.Flux2Transformer2DModel.from_pretrained
   _partial_: true
   pretrained_model_name_or_path: "/data/coding/FLUX.2-klein-base-9B"
+  subfolder: "transformer"
   torch_dtype:
     _target_: hydra.utils.get_object
     path: torch.bfloat16
@@ -78,7 +79,7 @@ dataset:
     - "/data/coding/outputs/final/bucket_id=8"
   repeat: [1, 1, 1, 1, 1, 1, 1, 1, 1]
   image_latent_key: "image_latents"
-  cond_image_latent_key: "cond_image_latents"
+  cond_image_latent_key: "condition_image_latents"
   caption_keys: ["caption_1", "caption_2"]
   caption_selection_probs: [0.7, 0.3]
   caption_drop_prob: 0.1
@@ -91,7 +92,7 @@ training_config:
   steps: 10
   seed: 42
   save_model_only: true
-  batch_size: 4
+  batch_size: 2
   drop_last: true
   num_workers: 8
   pin_memory: true
