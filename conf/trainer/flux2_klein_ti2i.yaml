@@ -1,0 +1,95 @@
+defaults:
+  - base
+  - _self_
+
+_target_: trainer.models.flux2_klein_ti2i.Flux2KleinTI2ITrainer
+model_factory: 
+  _target_: diffusers.Flux2Transformer2DModel.from_pretrained
+  _partial_: true
+  pretrained_model_name_or_path: ???
+optimizer_factory:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 1e-4
+  betas: [0.9, 0.999]
+  eps: 1e-8
+  weight_decay: 1e-2
+lr_scheduler_factory:
+  _target_: trainer.components.scheduler.get_constant_schedule
+  _partial_: true
+lora_config:
+  _target_: peft.LoraConfig
+  r: 64
+  lora_alpha: 64
+  lora_dropout: 0.0
+  init_lora_weights: "gaussian"
+  target_modules:
+    - "to_q"
+    - "to_k"
+    - "to_v"
+    - "to_out.0"
+    - "add_q_proj"
+    - "add_k_proj"
+    - "add_v_proj"
+    - "to_add_out"
+    - "linear_in"
+    - "linear_out"
+    - "to_qkv_mlp_proj"
+    - "single_transformer_blocks.0.attn.to_out"
+    - "single_transformer_blocks.1.attn.to_out"
+    - "single_transformer_blocks.2.attn.to_out"
+    - "single_transformer_blocks.3.attn.to_out"
+    - "single_transformer_blocks.4.attn.to_out"
+    - "single_transformer_blocks.5.attn.to_out"
+    - "single_transformer_blocks.6.attn.to_out"
+    - "single_transformer_blocks.7.attn.to_out"
+    - "single_transformer_blocks.8.attn.to_out"
+    - "single_transformer_blocks.9.attn.to_out"
+    - "single_transformer_blocks.10.attn.to_out"
+    - "single_transformer_blocks.11.attn.to_out"
+    - "single_transformer_blocks.12.attn.to_out"
+    - "single_transformer_blocks.13.attn.to_out"
+    - "single_transformer_blocks.14.attn.to_out"
+    - "single_transformer_blocks.15.attn.to_out"
+    - "single_transformer_blocks.16.attn.to_out"
+    - "single_transformer_blocks.17.attn.to_out"
+    - "single_transformer_blocks.18.attn.to_out"
+    - "single_transformer_blocks.19.attn.to_out"
+    - "single_transformer_blocks.20.attn.to_out"
+    - "single_transformer_blocks.21.attn.to_out"
+    - "single_transformer_blocks.22.attn.to_out"
+    - "single_transformer_blocks.23.attn.to_out"
+dataset:
+  _target_: trainer.dataset.StreamingConditionImageCaptionLatentsDataset
+  remote: none
+  batch_size: ${training_config.batch_size}
+  local: []
+  repeat: [1, 1, 1, 1, 1, 1, 1, 1]
+  image_latent_key: "image_latents"
+  cond_image_latent_key: "cond_image_latents"
+  caption_keys: ["caption_1", "caption_2"]
+  caption_selection_probs: [0.7, 0.3]
+  caption_drop_prob: 0.1
+  text_embedding_keys: ["text_embedding"]
+  uncond_text_embedding_path: ???
+  shuffle: true
+  shuffle_seed: ${training_config.seed}
+  device_per_stream: "device_per_stream"
+
+training_config:
+  steps: 5000
+  seed: 42
+  save_model_only: true
+  batch_size: 8
+  drop_last: true
+  num_workers: 16
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 2
+  checkpoint_freq: 500
+  distinct_seed_mesh_dims: ["fsdp", "dp_replicate"]
+
+weighting_scheme: "logit_normal"
+logit_mean: 0.0
+logit_std: 1.0
+noise_shift: 3.0

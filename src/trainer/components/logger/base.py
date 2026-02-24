@@ -1,0 +1,6 @@
+from typing import Any, Protocol
+
+
+class Logger(Protocol):
+    def log(self, step: int, metrics: dict[str, Any]) -> None: ...
+    def close(self) -> None: ...

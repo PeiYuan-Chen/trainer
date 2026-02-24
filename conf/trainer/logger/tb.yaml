@@ -1,0 +1,2 @@
+_target_: trainer.components.logger.TensorBoardLogger
+log_dir: ${hydra:run.dir}/logs

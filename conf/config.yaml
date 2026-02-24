@@ -1,0 +1,6 @@
+defaults:
+  - base_config
+  - ray_train: single_gpu
+  - trainer: flux2_klein_ti2i
+  - _self_
+
