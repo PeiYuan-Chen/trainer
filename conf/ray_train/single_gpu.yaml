@@ -3,5 +3,5 @@ num_workers: 1
 storage_path: ${hydra:run.dir}/checkpoints
 use_gpu: true
 resources_per_worker:
-  CPU: 8
+  CPU: 11
   GPU: 1

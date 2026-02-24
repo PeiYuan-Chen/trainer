@@ -28,8 +28,7 @@ from peft import (
 from trainer.components import Checkpointer, Logger
 from trainer.distributed import ParallelDims, dist_mean, dist_max
 from trainer.utils import set_determinism, maybe_enable_amp, clip_grad_norm_
-from trainer.config import ParallelConfig
-from .config import TrainingConfig
+from .config import TrainingConfig, ParallelConfig
 
 logger = logging.getLogger(__name__)
 

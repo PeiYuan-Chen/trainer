@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Literal
 
 
 @dataclass
@@ -10,7 +9,7 @@ class TrainingConfig:
     deterministic: bool = False
     deterministic_warn_only: bool = False
     distinct_seed_mesh_dims: list[str] = field(default_factory=list)
-    mixed_precision_param: Literal["bfloat16", "float32"] = "bfloat16"
+    mixed_precision_param: str = "bfloat16"
     gradient_accumulation_steps: int = 1
     max_norm: float = 1.0
 
@@ -26,3 +25,10 @@ class TrainingConfig:
     checkpoint_freq: int = 500
     log_freq: int = 1
     save_model_only: bool = False
+
+
+@dataclass
+class ParallelConfig:
+    dp_replicate: int = 1
+    dp_shard: int = -1
+    cp: int = 1

@@ -14,7 +14,7 @@ from ray.train.torch import TorchTrainer
 from ray.train import ScalingConfig, RunConfig, CheckpointConfig
 
 from .config import RayTrainConfig
-from .train import train_func
+from .train import train_func, TrainingConfig
 
 logger = logging.getLogger(__name__)
 cs = ConfigStore.instance()
@@ -27,6 +27,7 @@ class Config:
 
 
 cs.store(name="base_config", node=Config)
+cs.store(group="trainer/training_config", name="base", node=TrainingConfig)
 
 
 @hydra.main(version_base=None, config_path=None, config_name="config")

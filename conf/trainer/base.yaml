@@ -1,4 +1,5 @@
 defaults:
-  - logger: tb
+  - training_config: base
+  - metric_logger: tb
   - checkpointer: dcp
   - _self_

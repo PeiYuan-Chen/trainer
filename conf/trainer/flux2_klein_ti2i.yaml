@@ -6,7 +6,10 @@ _target_: trainer.models.flux2_klein_ti2i.Flux2KleinTI2ITrainer
 model_factory: 
   _target_: diffusers.Flux2Transformer2DModel.from_pretrained
   _partial_: true
-  pretrained_model_name_or_path: ???
+  pretrained_model_name_or_path: "/data/coding/FLUX.2-klein-base-9B"
+  torch_dtype:
+    _target_: hydra.utils.get_object
+    path: torch.bfloat16
 optimizer_factory:
   _target_: torch.optim.AdamW
   _partial_: true
@@ -61,32 +64,40 @@ lora_config:
     - "single_transformer_blocks.23.attn.to_out"
 dataset:
   _target_: trainer.dataset.StreamingConditionImageCaptionLatentsDataset
-  remote: none
-  batch_size: ${training_config.batch_size}
-  local: []
-  repeat: [1, 1, 1, 1, 1, 1, 1, 1]
+  remote: null
+  batch_size: ${trainer.training_config.batch_size}
+  local: 
+    - "/data/coding/outputs/final/bucket_id=0"
+    - "/data/coding/outputs/final/bucket_id=1"
+    - "/data/coding/outputs/final/bucket_id=2"
+    - "/data/coding/outputs/final/bucket_id=3"
+    - "/data/coding/outputs/final/bucket_id=4"
+    - "/data/coding/outputs/final/bucket_id=5"
+    - "/data/coding/outputs/final/bucket_id=6"
+    - "/data/coding/outputs/final/bucket_id=7"
+    - "/data/coding/outputs/final/bucket_id=8"
+  repeat: [1, 1, 1, 1, 1, 1, 1, 1, 1]
   image_latent_key: "image_latents"
   cond_image_latent_key: "cond_image_latents"
   caption_keys: ["caption_1", "caption_2"]
   caption_selection_probs: [0.7, 0.3]
   caption_drop_prob: 0.1
-  text_embedding_keys: ["text_embedding"]
-  uncond_text_embedding_path: ???
+  text_embedding_keys: ["text_embeddings"]
+  uncond_text_embedding_path: "/data/coding/outputs/flux2-uncond-text-embeddings.pt"
   shuffle: true
-  shuffle_seed: ${training_config.seed}
-  device_per_stream: "device_per_stream"
-
+  shuffle_seed: ${trainer.training_config.seed}
+  batching_method: "device_per_stream"
 training_config:
-  steps: 5000
+  steps: 10
   seed: 42
   save_model_only: true
-  batch_size: 8
+  batch_size: 4
   drop_last: true
-  num_workers: 16
+  num_workers: 8
   pin_memory: true
   persistent_workers: true
   prefetch_factor: 2
-  checkpoint_freq: 500
+  checkpoint_freq: 5
   distinct_seed_mesh_dims: ["fsdp", "dp_replicate"]
 
 weighting_scheme: "logit_normal"

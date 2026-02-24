@@ -58,10 +58,6 @@ def _make_remote_and_local_sequences(
                 f"remote and local Sequences must be the same length, got lengths {len(remote)} and {len(local)}"
             )
     return remote, local
-    # else:
-    #     raise ValueError(
-    #         f"remote and local must be both Strings or Sequences, got types {type(remote)} and {type(local)}."
-    #     )
 
 
 def _make_default_local_path(remote_path: str, base: str = "/tmp") -> str:

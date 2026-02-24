@@ -9,7 +9,7 @@ from .trainer import Trainer
 def train_func(config_dict: dict[str, Any]):
     cfg = OmegaConf.create(config_dict)
 
-    trainer: Trainer = instantiate(cfg.trainer)
+    trainer: Trainer = instantiate(cfg)
 
     trainer.train()
     trainer.close()
